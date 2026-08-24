@@ -24,6 +24,36 @@ export default function SettingsModal({ isOpen, onClose, settings, updateSetting
 
   if (!isOpen) return null;
 
+  const isImperial = settings.unitSystem === 'imperial';
+
+  // Temperature conversions
+  const tempMin = isImperial ? 68 : 20;
+  const tempMax = isImperial ? 122 : 50;
+  const displayTemp = isImperial 
+    ? Math.round((settings.tempAlertThreshold * 9/5) + 32)
+    : settings.tempAlertThreshold;
+  const tempUnit = isImperial ? '°F' : '°C';
+
+  const handleTempChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value);
+    const tempC = isImperial ? Math.round((val - 32) * 5/9) : val;
+    updateSettings({ tempAlertThreshold: tempC });
+  };
+
+  // Wind conversions
+  const windMin = isImperial ? 5 : 10;
+  const windMax = isImperial ? 65 : 100;
+  const displayWind = isImperial 
+    ? Math.round(settings.windAlertThreshold * 0.621371)
+    : settings.windAlertThreshold;
+  const windUnit = isImperial ? 'mph' : 'km/h';
+
+  const handleWindChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value);
+    const windKmh = isImperial ? Math.round(val / 0.621371) : val;
+    updateSettings({ windAlertThreshold: windKmh });
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -86,7 +116,7 @@ export default function SettingsModal({ isOpen, onClose, settings, updateSetting
                 Heat Warning Threshold
               </h3>
               <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                {settings.tempAlertThreshold}°C
+                {displayTemp}{tempUnit}
               </span>
             </div>
             <p className="text-xs text-gray-500 mb-3">
@@ -94,16 +124,16 @@ export default function SettingsModal({ isOpen, onClose, settings, updateSetting
             </p>
             <input
               type="range"
-              min="20"
-              max="50"
+              min={tempMin}
+              max={tempMax}
               step="1"
-              value={settings.tempAlertThreshold}
-              onChange={(e) => updateSettings({ tempAlertThreshold: Number(e.target.value) })}
+              value={displayTemp}
+              onChange={handleTempChange}
               className="w-full accent-blue-500"
             />
             <div className="flex justify-between text-xs text-gray-400 mt-1">
-              <span>20°C</span>
-              <span>50°C</span>
+              <span>{tempMin}{tempUnit}</span>
+              <span>{tempMax}{tempUnit}</span>
             </div>
           </div>
 
@@ -115,7 +145,7 @@ export default function SettingsModal({ isOpen, onClose, settings, updateSetting
                 Wind Warning Threshold
               </h3>
               <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                {settings.windAlertThreshold} km/h
+                {displayWind} {windUnit}
               </span>
             </div>
             <p className="text-xs text-gray-500 mb-3">
@@ -123,16 +153,16 @@ export default function SettingsModal({ isOpen, onClose, settings, updateSetting
             </p>
             <input
               type="range"
-              min="10"
-              max="100"
+              min={windMin}
+              max={windMax}
               step="5"
-              value={settings.windAlertThreshold}
-              onChange={(e) => updateSettings({ windAlertThreshold: Number(e.target.value) })}
+              value={displayWind}
+              onChange={handleWindChange}
               className="w-full accent-blue-500"
             />
             <div className="flex justify-between text-xs text-gray-400 mt-1">
-              <span>10 km/h</span>
-              <span>100 km/h</span>
+              <span>{windMin} {windUnit}</span>
+              <span>{windMax} {windUnit}</span>
             </div>
           </div>
         </div>
