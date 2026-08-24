@@ -1,0 +1,13 @@
+{
+  "name": "weather-dashboard",
+  "version": "1.0.0",
+  "description": "AI-Powered Weather Analytics Dashboard",
+  "private": true,
+  "scripts": {
+    "dev:client": "cd client && npm run dev",
+    "build:client": "cd client && npm run build",
+    "lint:client": "cd client && npm run lint",
+    "test:client": "cd client && npm run test",
+    "install:all": "cd client && npm install"
+  }
+}
